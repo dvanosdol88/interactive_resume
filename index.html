@@ -51,7 +51,7 @@
                     <a href="#summary" class="text-slate-600 hover:text-teal-600 transition-colors">Summary</a>
                     <a href="#experience" class="text-slate-600 hover:text-teal-600 transition-colors">Experience</a>
                     <a href="#skills" class="text-slate-600 hover:text-teal-600 transition-colors">Skills</a>
-                    <a href="#education" class="text-slate-600 hover:text-teal-600 transition-colors">Education & Certs</a>
+                    <a href="#education" class="text-slate-600 hover:text-teal-600 transition-colors">Education, Certs & Personal</a>
                 </div>
                 <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:bg-slate-200">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -63,7 +63,7 @@
                 <a href="#summary" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-200 rounded">Summary</a>
                 <a href="#experience" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-200 rounded">Experience</a>
                 <a href="#skills" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-200 rounded">Skills</a>
-                <a href="#education" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-200 rounded">Education & Certs</a>
+                <a href="#education" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-200 rounded">Education, Certs & Personal</a>
             </div>
         </nav>
     </header>
@@ -78,7 +78,7 @@
                 </p>
                 <div class="mt-8 flex items-center space-x-6 text-slate-600">
                     <span>📞 646-418-2867</span>
-                    <span>📧 david@davidcfacfp.com</span>
+                    <span>📧 <a href="mailto:david@davidcfacfp.com" class="text-teal-600 hover:text-teal-700 transition-colors">david@davidcfacfp.com</a></span>
                     <span>🌍 Nyack, NY</span>
                 </div>
             </div>
@@ -119,11 +119,11 @@
         </section>
 
         <section id="education" class="py-20 border-t border-slate-200">
-            <h2 class="text-4xl font-bold text-center text-slate-800">Education & Certifications</h2>
+            <h2 class="text-4xl font-bold text-center text-slate-800">Education, Certifications, and Personal</h2>
             <div class="mt-8 max-w-4xl mx-auto text-center text-slate-600 text-lg leading-relaxed">
                 <p>A strong educational foundation and a commitment to continuous learning are cornerstones of my professional practice. This section details my academic background and the key industry certifications I hold, which validate my expertise and dedication to the highest standards of the financial profession.</p>
             </div>
-            <div id="education-container" class="mt-16 grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div id="education-container" class="mt-16 grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             </div>
         </section>
 
@@ -331,6 +331,15 @@
                         { name: "CFA Charterholder", detail: "CFA Institute (ID: 192342)" },
                         { name: "Certified Financial Planner® (CFP®)", detail: "CFP Board (ID: 76677)" },
                         { name: "Series 7 & 66", detail: "FINRA" }
+                    ]
+                },
+                personal: {
+                    icon: '👤',
+                    title: "Personal",
+                    items: [
+                        { name: "Family", detail: "I live in Nyack, NY with my partner Julie and have two boys; Max, 22 and working in Portland, Maine, and Leo, 20, a Senior in college in Rhode Island." },
+                        { name: "MakerSpace", detail: "In my spare time I like to spend as much time as I can in New Haven, CT, where my MakerSpace, <a href='https://makehaven.org' target='_blank' class='text-teal-600 hover:text-teal-700 transition-colors'>MakeHaven (makehaven.org)</a> is located." },
+                        { name: "Interests", detail: "I am passionate about woodworking, fishing, and learning as much as I can about technology and A.I. You can see one of my latest digital projects <a href='https://davidcfacfp.com/game' target='_blank' class='text-teal-600 hover:text-teal-700 transition-colors'>here</a>." }
                     ]
                 }
             };

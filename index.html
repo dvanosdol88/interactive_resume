@@ -1,365 +1,409 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>David Van Osdol, CFA, CFP® - Interactive Resume</title>
+    <title>🐚 Bash + 🤖 Claude Code Interactive Cheat Sheet</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Warm Neutral (Background: #F8F7F4, Text: Slate, Accent: Teal) -->
-    <!-- Application Structure Plan: The SPA is designed as a narrative journey through David Van Osdol's career, prioritizing user exploration over a rigid, linear format. The structure includes a sticky navigation for quick access, an interactive vertical timeline for the extensive work experience, and categorized skill cards. This design breaks down complex information into digestible, interactive chunks, making the resume more engaging and easier to navigate than a traditional document. The goal is to allow a user to either scroll through the career story or jump directly to the section most relevant to them. -->
-    <!-- Visualization & Content Choices: 
-        - Experience -> Goal: Organize/Compare -> Viz: Interactive Vertical Timeline (HTML/CSS/JS) & Bar Chart (Chart.js). Justification: The timeline condenses 20+ years of experience, making it scannable. Clicking expands details, preventing information overload. The bar chart provides a quick visual comparison of role durations, offering an at-a-glance summary of the career path.
-        - Skills -> Goal: Organize -> Viz: Grouped Cards (HTML/Tailwind). Justification: Categorizing skills into "Wealth Management," "Business Acumen," etc., provides structure and clarity, which is more effective than a long list.
-        - Certifications -> Goal: Inform -> Viz: Icon-based List (HTML/Tailwind). Justification: Using icons makes the section quickly scannable and visually distinct.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F8F7F4;
-            color: #334155;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px;
-            max-height: 400px;
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
         }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 400px;
-            }
+        .command-block {
+            transition: all 0.3s ease;
+        }
+        .command-block:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .copy-btn {
+            transition: all 0.2s ease;
+        }
+        .copy-btn:active {
+            transform: scale(0.95);
+        }
+        .section-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+        .dark .section-card {
+            background: rgba(30, 41, 59, 0.9);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .code-snippet {
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .tooltip-container:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
 </head>
-<body class="antialiased">
-
-    <header id="header" class="bg-[#F8F7F4]/80 backdrop-blur-lg sticky top-0 z-50 transition-all duration-300">
-        <nav class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="text-2xl font-bold text-slate-800">
-                    <a href="#home">DVO</a>
-                </div>
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="#summary" class="text-slate-600 hover:text-teal-600 transition-colors">Summary</a>
-                    <a href="#experience" class="text-slate-600 hover:text-teal-600 transition-colors">Experience</a>
-                    <a href="#skills" class="text-slate-600 hover:text-teal-600 transition-colors">Skills</a>
-                    <a href="#education" class="text-slate-600 hover:text-teal-600 transition-colors">Education, Certs & Personal</a>
-                </div>
-                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-slate-600 hover:bg-slate-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-                    </svg>
-                </button>
-            </div>
-            <div id="mobile-menu" class="hidden md:hidden mt-4">
-                <a href="#summary" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-200 rounded">Summary</a>
-                <a href="#experience" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-200 rounded">Experience</a>
-                <a href="#skills" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-200 rounded">Skills</a>
-                <a href="#education" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-200 rounded">Education, Certs & Personal</a>
-            </div>
-        </nav>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-8 px-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-4xl font-bold flex items-center justify-center space-x-3">
+                <span class="text-5xl">🐚</span>
+                <span>Bash + Claude Code Cheat Sheet</span>
+                <span class="text-5xl">🤖</span>
+            </h1>
+            <p class="text-center mt-2 text-purple-100">Interactive command reference for developers</p>
+        </div>
     </header>
 
-    <main class="container mx-auto px-6">
-        <section id="home" class="min-h-[60vh] flex items-center py-20">
-            <div>
-                <h1 class="text-5xl md:text-7xl font-bold text-slate-800 leading-tight">David Van Osdol</h1>
-                <h2 class="text-2xl md:text-3xl font-medium text-teal-600 mt-2">CFA Charterholder & Certified Financial Planner®</h2>
-                <p class="mt-6 max-w-3xl text-lg text-slate-600">
-                    Accomplished financial professional with 20+ years of experience in wealth management and portfolio advisory services, distinguished by entrepreneurial spirit and proven ability to build exceptional client relationships.
-                </p>
-                <div class="mt-8 flex items-center space-x-6 text-slate-600">
-                    <span>📞 646-418-2867</span>
-                    <span>📧 <a href="mailto:david@davidcfacfp.com" class="text-teal-600 hover:text-teal-700 transition-colors">david@davidcfacfp.com</a></span>
-                    <span>🌍 Nyack, NY</span>
+    <!-- Search Bar -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="relative">
+            <input type="text" id="searchInput" placeholder="Search commands..." 
+                class="w-full px-4 py-3 pl-12 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            <i class="fas fa-search absolute left-4 top-4 text-gray-400"></i>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 pb-12">
+        <!-- Grep Section -->
+        <section class="mb-8 fade-in">
+            <div class="section-card rounded-xl p-6 shadow-lg">
+                <h2 class="text-3xl font-extrabold mb-4 flex items-center text-gray-900 dark:text-white">
+                    <i class="fas fa-search text-purple-600 mr-3"></i>
+                    GREP — Find Text in Files
+                </h2>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-purple-600 dark:text-purple-400">grep "pattern" file.txt</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Search for "pattern" in file.txt</p>
+                        <button onclick="copyCommand('grep \"pattern\" file.txt')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-purple-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-purple-600 dark:text-purple-400">grep -i "pattern" file.txt</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Case-insensitive search</p>
+                        <button onclick="copyCommand('grep -i \"pattern\" file.txt')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-purple-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-purple-600 dark:text-purple-400">grep -v "pattern" file.txt</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Show lines that don't match</p>
+                        <button onclick="copyCommand('grep -v \"pattern\" file.txt')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-purple-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-purple-600 dark:text-purple-400">grep -r "pattern" folder/</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Recursive search in folder</p>
+                        <button onclick="copyCommand('grep -r \"pattern\" folder/')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-purple-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="summary" class="py-20 border-t border-slate-200">
-            <h2 class="text-4xl font-bold text-center text-slate-800">Professional Summary</h2>
-             <div class="mt-12 bg-white p-8 rounded-xl shadow-md border border-slate-200 max-w-4xl mx-auto">
-                <p class="text-slate-700 leading-loose text-lg">Accomplished financial professional with 20+ years of experience in wealth management and portfolio advisory services. CFA Charterholder and Certified Financial Planner with proven ability to build and manage high-net-worth client relationships, demonstrated by consistent top-tier performance and award recognition. Distinguished by entrepreneurial spirit and growth mindset, having successfully founded a technology startup in between excellence in traditional wealth management roles. Combines deep financial expertise with innovative technology solutions to deliver comprehensive, client-focused advisory services.</p>
+        <!-- Common Bash Commands -->
+        <section class="mb-8 fade-in">
+            <div class="section-card rounded-xl p-6 shadow-lg">
+                <h2 class="text-3xl font-extrabold mb-4 flex items-center text-gray-900 dark:text-white">
+                    <i class="fas fa-terminal text-green-600 mr-3"></i>
+                    Common Bash Commands
+                </h2>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-green-600 dark:text-green-400">ls</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">List files and folders</p>
+                        <button onclick="copyCommand('ls')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-green-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-green-600 dark:text-green-400">cd folder/</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Change directory</p>
+                        <button onclick="copyCommand('cd folder/')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-green-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-green-600 dark:text-green-400">pwd</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Show current directory</p>
+                        <button onclick="copyCommand('pwd')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-green-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-green-600 dark:text-green-400">mkdir new_folder</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Make a new folder</p>
+                        <button onclick="copyCommand('mkdir new_folder')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-green-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-green-600 dark:text-green-400">rm file.txt</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Delete a file</p>
+                        <button onclick="copyCommand('rm file.txt')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-green-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-green-600 dark:text-green-400">cat file.txt</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Print file contents</p>
+                        <button onclick="copyCommand('cat file.txt')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-green-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section id="experience" class="py-20 border-t border-slate-200">
-            <h2 class="text-4xl font-bold text-center text-slate-800">Professional Experience</h2>
-            <div class="mt-6 text-center">
-                <p class="text-teal-600 font-semibold text-lg bg-teal-50 inline-block px-6 py-3 rounded-full border border-teal-200">
-                    Click on any role to see more details
-                </p>
-            </div>
-            <div id="timeline-container" class="mt-16 max-w-4xl mx-auto">
+        <!-- Claude Code + WSL -->
+        <section class="mb-8 fade-in">
+            <div class="section-card rounded-xl p-6 shadow-lg">
+                <h2 class="text-3xl font-extrabold mb-4 flex items-center text-gray-900 dark:text-white">
+                    <i class="fas fa-robot text-blue-600 mr-3"></i>
+                    Claude Code + WSL
+                </h2>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-blue-600 dark:text-blue-400">wsl</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Start WSL Linux environment</p>
+                        <button onclick="copyCommand('wsl')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-blue-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-blue-600 dark:text-blue-400">code .</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Open current folder in VS Code</p>
+                        <button onclick="copyCommand('code .')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-blue-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-blue-600 dark:text-blue-400">git clone &lt;url&gt;</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Clone a GitHub repo</p>
+                        <button onclick="copyCommand('git clone <url>')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-blue-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-blue-600 dark:text-blue-400">npm start</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Start a Node.js app</p>
+                        <button onclick="copyCommand('npm start')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-blue-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section id="skills" class="py-20 border-t border-slate-200">
-            <h2 class="text-4xl font-bold text-center text-slate-800">Core Competencies</h2>
-             <div class="mt-8 max-w-4xl mx-auto text-center text-slate-600 text-lg leading-relaxed">
-                <p>This section outlines the core competencies I've developed throughout my career. These skills are grouped into key areas of expertise, from client advisory and business strategy to technical and analytical capabilities. They represent the foundation upon which I build effective financial solutions and client relationships.</p>
-            </div>
-            <div id="skills-container" class="mt-16 grid md:grid-cols-2 lg:grid-cols-2 gap-8">
+        <!-- Extended Bash Commands -->
+        <section class="mb-8 fade-in">
+            <div class="section-card rounded-xl p-6 shadow-lg">
+                <h2 class="text-3xl font-extrabold mb-4 flex items-center text-gray-900 dark:text-white">
+                    <i class="fas fa-tools text-orange-600 mr-3"></i>
+                    Extended Bash Commands
+                </h2>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-orange-600 dark:text-orange-400">chmod +x file.sh</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Make script executable</p>
+                        <button onclick="copyCommand('chmod +x file.sh')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-orange-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-orange-600 dark:text-orange-400">ps aux</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">List all processes</p>
+                        <button onclick="copyCommand('ps aux')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-orange-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-orange-600 dark:text-orange-400">df -h</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Show disk space</p>
+                        <button onclick="copyCommand('df -h')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-orange-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-orange-600 dark:text-orange-400">tar -czvf archive.tar.gz folder/</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Create compressed archive</p>
+                        <button onclick="copyCommand('tar -czvf archive.tar.gz folder/')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-orange-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-orange-600 dark:text-orange-400">curl http://url.com</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Fetch content from URL</p>
+                        <button onclick="copyCommand('curl http://url.com')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-orange-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-orange-600 dark:text-orange-400">top</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Live process monitor</p>
+                        <button onclick="copyCommand('top')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-orange-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section id="education" class="py-20 border-t border-slate-200">
-            <h2 class="text-4xl font-bold text-center text-slate-800">Education, Certifications, and Personal</h2>
-            <div class="mt-8 max-w-4xl mx-auto text-center text-slate-600 text-lg leading-relaxed">
-                <p>A strong educational foundation and a commitment to continuous learning are cornerstones of my professional practice. This section details my academic background and the key industry certifications I hold, which validate my expertise and dedication to the highest standards of the financial profession.</p>
-            </div>
-            <div id="education-container" class="mt-16 grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <!-- Useful Patterns -->
+        <section class="mb-8 fade-in">
+            <div class="section-card rounded-xl p-6 shadow-lg">
+                <h2 class="text-3xl font-extrabold mb-4 flex items-center text-gray-900 dark:text-white">
+                    <i class="fas fa-lightbulb text-yellow-600 mr-3"></i>
+                    Useful Bash Patterns
+                </h2>
+                <div class="space-y-4">
+                    <div class="code-snippet rounded-lg p-4">
+                        <pre class="font-mono text-sm">
+<span class="text-green-400"># Pipe output to grep</span>
+ls -l | grep ".txt"
+
+<span class="text-green-400"># Count lines with a match</span>
+grep -c "error" logfile.txt
+
+<span class="text-green-400"># Save command output to a file</span>
+ls > list.txt
+
+<span class="text-green-400"># Append output to a file</span>
+echo "New entry" >> notes.txt</pre>
+                    </div>
+                </div>
             </div>
         </section>
 
+        <!-- PATH & Environment Variables -->
+        <section class="mb-8 fade-in">
+            <div class="section-card rounded-xl p-6 shadow-lg">
+                <h2 class="text-3xl font-extrabold mb-4 flex items-center text-gray-900 dark:text-white">
+                    <i class="fas fa-globe text-indigo-600 mr-3"></i>
+                    PATH & Environment Variables
+                </h2>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-indigo-600 dark:text-indigo-400">echo $PATH</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Show your current PATH</p>
+                        <button onclick="copyCommand('echo $PATH')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-indigo-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-indigo-600 dark:text-indigo-400">export PATH=$PATH:/new/path</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Add directory to PATH</p>
+                        <button onclick="copyCommand('export PATH=$PATH:/new/path')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-indigo-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-indigo-600 dark:text-indigo-400">export VAR_NAME="value"</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Create environment variable</p>
+                        <button onclick="copyCommand('export VAR_NAME="value"')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-indigo-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="command-block bg-gray-100 dark:bg-gray-800 rounded-lg p-4 relative">
+                        <code class="text-sm font-mono text-indigo-600 dark:text-indigo-400">echo $VAR_NAME</code>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Access variable value</p>
+                        <button onclick="copyCommand('echo $VAR_NAME')" class="copy-btn absolute top-2 right-2 text-gray-500 hover:text-indigo-600">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-4">
+                    <p class="text-sm"><strong>💡 Tip:</strong> Add environment variables to <code class="text-indigo-600 dark:text-indigo-400">~/.bashrc</code> or <code class="text-indigo-600 dark:text-indigo-400">~/.bash_profile</code> to make them permanent.</p>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <footer class="bg-slate-800 text-white mt-20">
-        <div class="container mx-auto px-6 py-8 text-center">
-            <p>&copy; 2025 David Van Osdol. All Rights Reserved.</p>
-            <p class="text-sm text-slate-400 mt-2">Interactive resume designed to showcase professional experience.</p>
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm">🐚 Bash + 🤖 Claude Code Cheat Sheet | Interactive Version</p>
+            <p class="text-xs text-gray-400 mt-2">Click any command to copy it to your clipboard</p>
         </div>
     </footer>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg transform translate-y-20 transition-transform duration-300">
+        <i class="fas fa-check mr-2"></i>
+        <span>Command copied!</span>
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const navLinks = mobileMenu.querySelectorAll('a');
-
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
+        // Copy command to clipboard
+        function copyCommand(command) {
+            navigator.clipboard.writeText(command).then(() => {
+                showToast();
             });
+        }
 
-            navLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.add('hidden');
-                });
-            });
+        // Show toast notification
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.style.transform = 'translateY(0)';
+            setTimeout(() => {
+                toast.style.transform = 'translateY(80px)';
+            }, 2000);
+        }
 
-            let lastScrollY = window.scrollY;
-            const header = document.getElementById('header');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 100) {
-                    header.classList.add('shadow-md');
-                } else {
-                    header.classList.remove('shadow-md');
-                }
-                lastScrollY = window.scrollY;
-            });
-
-            const experienceData = [
-                {
-                    role: "Financial Consultant",
-                    company: "Fidelity Investments",
-                    period: "Oct 2021 – Present",
-                    location: "Chappaqua, NY",
-                    details: [
-                        "Manage comprehensive wealth management relationships for affluent clients across diverse portfolios",
-                        "Collaborate with unified Wealth Management Team to develop and execute tailored investment strategies and financial plans",
-                        "Maintain exceptional client retention through proactive portfolio management and strategic financial guidance"
-                    ],
-                    startDate: new Date('2021-10-01'),
-                    endDate: new Date() 
-                },
-                {
-                    role: "Financial Planning Specialist",
-                    company: "Pell Wealth Partners",
-                    period: "Sep 2019 – Jan 2021",
-                    location: "Rye, NY",
-                    details: [
-                        "Designed and implemented comprehensive financial plans for high-net-worth clients with strong adoption and success rates",
-                        "Leveraged advanced planning software (NaviPlan, Morningstar) and custom analytical tools to optimize client outcomes",
-                        "Maintained excellent client retention through clear communication of complex financial strategies"
-                    ],
-                    startDate: new Date('2019-09-01'),
-                    endDate: new Date('2021-01-31')
-                },
-                {
-                    role: "Registered Representative",
-                    company: "Peller Wealth Management",
-                    period: "Nov 2018 – Sep 2019",
-                    location: "New York, NY",
-                    details: [
-                        "Launched CPA-affiliated wealth management division, successfully onboarding high-net-worth client relationships",
-                        "Developed strategic marketing initiatives that generated substantial new client acquisition",
-                        "Collaborated with principals to establish compliance frameworks and operational best practices"
-                    ],
-                    startDate: new Date('2018-11-01'),
-                    endDate: new Date('2019-09-30')
-                },
-                {
-                    role: "VP, Business Development",
-                    company: "Sunnyside Federal Bank (NASDAQ: SNNY)",
-                    period: "Nov 2013 – Oct 2015",
-                    location: "Irvington, NY",
-                    details: [
-                        "Originated largest loan in bank history, demonstrating exceptional business development capabilities",
-                        "Designed and implemented loyalty programs targeting affluent families, significantly increasing market penetration",
-                        "Initiated strategic expansion into wealth management services, contributing to substantial growth in fee-based revenue"
-                    ],
-                    startDate: new Date('2013-11-01'),
-                    endDate: new Date('2015-10-31')
-                },
-                {
-                    role: "Founder & CEO",
-                    company: "Kidos, Inc.",
-                    period: "Sep 2008 – Sep 2013",
-                    location: "New York, NY",
-                    details: [
-                        "Founded and scaled ed-tech startup featuring proprietary touchscreen devices and interactive operating system",
-                        "Secured content licensing agreements across 12+ languages, building comprehensive digital distribution platform",
-                        "Led cross-functional teams through product development lifecycle, from prototyping to market deployment"
-                    ],
-                    startDate: new Date('2008-09-01'),
-                    endDate: new Date('2013-09-30')
-                },
-                {
-                    role: "Financial Advisor & Portfolio Manager",
-                    company: "Citigroup / Smith Barney / Morgan Stanley",
-                    period: "Jan 1998 – Sep 2008",
-                    location: "New York, NY",
-                    details: [
-                        "Grew assets under management from zero through targeted business development with technology firms and CPAs",
-                        "Earned \"Blue Chip\" award (Top 10% performance) for three consecutive years for exceptional client acquisition and retention",
-                        "Selected to lead national training initiative for senior private bankers on investment platform integration"
-                    ],
-                    startDate: new Date('1998-01-01'),
-                    endDate: new Date('2008-09-30')
-                },
-            ];
-
-            const timelineContainer = document.getElementById('timeline-container');
-            experienceData.forEach((item, index) => {
-                const isLast = index === experienceData.length - 1;
-                const timelineItem = `
-                    <div class="relative timeline-item cursor-pointer">
-                        <div class="absolute w-0.5 h-full bg-slate-300 left-5 -top-4"></div>
-                        <div class="flex items-center">
-                            <div class="z-10 bg-teal-600 rounded-full h-10 w-10 flex items-center justify-center text-white font-bold">
-                                ${experienceData.length - index}
-                            </div>
-                            <div class="ml-6 flex-1">
-                                <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200 hover:shadow-lg hover:border-teal-300 transition-all">
-                                    <h3 class="text-xl font-bold text-slate-800">${item.role}</h3>
-                                    <p class="text-teal-600 font-semibold">${item.company}</p>
-                                    <p class="text-sm text-slate-500 mt-1">${item.period} | ${item.location}</p>
-                                    <div class="details mt-4 text-slate-600 hidden transition-all duration-500 ease-in-out">
-                                        <ul class="list-disc list-inside space-y-2">
-                                            ${item.details.map(d => `<li>${d}</li>`).join('')}
-                                        </ul>
-                                    </div>
-                                    <div class="text-right text-sm font-medium text-teal-600 mt-4">Click to expand</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                const itemWrapper = document.createElement('div');
-                itemWrapper.innerHTML = timelineItem;
-                itemWrapper.className = 'mb-8';
-
-                itemWrapper.querySelector('.timeline-item').addEventListener('click', (event) => {
-                    const details = event.currentTarget.querySelector('.details');
-                    const expandText = event.currentTarget.querySelector('.text-right');
-                    details.classList.toggle('hidden');
-                    expandText.textContent = details.classList.contains('hidden') ? 'Click to expand' : 'Click to collapse';
-                });
-
-                timelineContainer.appendChild(itemWrapper);
-            });
-
-            const skillsData = [
-                { 
-                    category: "Wealth Management & Advisory",
-                    skills: ["Alternative Investments", "Comprehensive Financial Planning", "Investment Strategy & Asset Allocation", "Portfolio Analysis & Review", "Insurance Planning", "High-Net-Worth Advisory", "Client Relationship Management"]
-                },
-                {
-                    category: "Technology & Analytics",
-                    skills: ["AI Fluency (see personal/projects below)", "Microsoft Suite (Advanced)", "Financial Planning Software (NaviPlan, e*Money)", "Vibe Programming <a href='#education' class='text-teal-600 hover:text-teal-700 transition-colors'>(see Personal/Interests below)</a>", "Claude Code", "ChatGPT", "Google Gemini", "Github"]
-                },
-                {
-                    category: "Business Development",
-                    skills: ["Entrepreneurship", "Business Strategy", "Client Acquisition", "Strategic Planning", "Cross-functional Team Leadership", "Market Analysis"]
-                },
-                {
-                    category: "Communication & Leadership",
-                    skills: ["Complex Financial Solution Presentation", "Client Advisory", "Relationship Building", "Team Leadership", "Cross-functional Collaboration"]
-                }
-            ];
-
-            const skillsContainer = document.getElementById('skills-container');
-            skillsData.forEach(cat => {
-                const skillCard = `
-                    <div class="bg-white p-8 rounded-xl shadow-md border border-slate-200 transform hover:-translate-y-1 transition-transform">
-                        <h3 class="text-2xl font-bold text-slate-800 mb-4">${cat.category}</h3>
-                        <ul class="space-y-2">
-                            ${cat.skills.map(skill => `<li class="flex items-start"><span class="text-teal-500 mr-2 mt-1">✓</span><span class="text-slate-600">${skill}</span></li>`).join('')}
-                        </ul>
-                    </div>
-                `;
-                skillsContainer.innerHTML += skillCard;
-            });
-
-            const educationData = {
-                degree: {
-                    icon: '🎓',
-                    title: "Education",
-                    items: [
-                        { name: "West Virginia University", detail: "Bachelor of Science in Finance" }
-                    ]
-                },
-                certs: {
-                    icon: '📜',
-                    title: "Certifications & Licenses",
-                    items: [
-                        { name: "CFA Charterholder", detail: "CFA Institute (ID: 192342)" },
-                        { name: "Certified Financial Planner®", detail: "CFP Board (ID: 76677)" },
-                        { name: "Series 7 & 66", detail: "Securities Licenses" }
-                    ]
-                },
-                personal: {
-                    icon: '👤',
-                    title: "Personal",
-                    items: [
-                        { name: "Family", detail: "I live in Nyack, NY with my partner Julie and have two boys; Max, 22 and working in Portland, Maine, and Leo, 20, a Senior in college in Rhode Island." },
-                        { name: "MakerSpace", detail: "In my spare time I like to spend as much time as I can in New Haven, CT, where my MakerSpace, <a href='https://makehaven.org' target='_blank' class='text-teal-600 hover:text-teal-700 transition-colors'>MakeHaven (makehaven.org)</a> is located." },
-                        { name: "Interests", detail: "I am passionate about woodworking, fishing, cooking, and learning as much as I can about everything, especially technology and A.I. You can see one of my latest digital project <a href='https://dvo88.com' target='_blank' class='text-teal-600 hover:text-teal-700 transition-colors font-bold'>here</a>." }
-                    ]
-                }
-            };
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const commandBlocks = document.querySelectorAll('.command-block');
             
-            const educationContainer = document.getElementById('education-container');
-            Object.values(educationData).forEach(section => {
-                const eduCard = `
-                    <div class="bg-white p-8 rounded-xl shadow-md border border-slate-200">
-                        <h3 class="text-2xl font-bold text-slate-800 mb-4 flex items-center">
-                            <span class="text-3xl mr-3">${section.icon}</span>
-                            ${section.title}
-                        </h3>
-                        <div class="space-y-3">
-                            ${section.items.map(item => `
-                                <div>
-                                    <p class="font-semibold text-slate-700">${item.name}</p>
-                                    <p class="text-slate-500">${item.detail}</p>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-                educationContainer.innerHTML += eduCard;
+            commandBlocks.forEach(block => {
+                const command = block.querySelector('code').textContent.toLowerCase();
+                const description = block.querySelector('p').textContent.toLowerCase();
+                
+                if (command.includes(searchTerm) || description.includes(searchTerm)) {
+                    block.style.display = 'block';
+                } else {
+                    block.style.display = 'none';
+                }
             });
+        });
 
-            // Initialize chart after all other content is loaded
-            // Chart removed - timeline provides better narrative focus
+        // Dark mode toggle (optional - you can add a button for this)
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        // Fade in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
         });
     </script>
 </body>
